@@ -21,6 +21,11 @@
 *.vcxproj.user
 *.exe
 *.odb
+*.pdb
+*.ilk
+*.obj
+*.idb
+*.pch
 
 bin
 lib
