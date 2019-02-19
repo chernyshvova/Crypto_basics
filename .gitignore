@@ -2,7 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-
 *.sdf
 *.suo
 *_i.c
@@ -20,11 +19,12 @@
 *.tlog
 *.tmp
 *.vcxproj.user
+*.exe
+*.odb
 
 bin
 lib
 obj
 ipch
 packages
-TestResults
 .cache
