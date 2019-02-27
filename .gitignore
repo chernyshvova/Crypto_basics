@@ -33,3 +33,4 @@ obj
 ipch
 packages
 .cache
+*.enc
