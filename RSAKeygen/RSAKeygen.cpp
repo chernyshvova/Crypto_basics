@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include <iostream>
 #include "CryptoUtils.h"
 
 namespace
@@ -13,9 +12,6 @@ namespace
 
 int main()
 {
-
-    
-    //encrypting alghorithm
     int p = 17;
     int q = 31;
 
