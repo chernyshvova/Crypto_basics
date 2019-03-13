@@ -26,6 +26,8 @@
 *.obj
 *.idb
 *.pch
+*ipdb
+*.iobj
 
 bin
 lib

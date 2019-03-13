@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RSAKeygen", "RSAKeygen\RSAKeygen.vcxproj", "{F8BFA5F0-612B-438B-B54C-48E84536828D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryptoAlgorithms1", "CryptoAlgorithms1\CryptoAlgorithms1.vcxproj", "{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{F8BFA5F0-612B-438B-B54C-48E84536828D}.Release|x64.Build.0 = Release|x64
 		{F8BFA5F0-612B-438B-B54C-48E84536828D}.Release|x86.ActiveCfg = Release|Win32
 		{F8BFA5F0-612B-438B-B54C-48E84536828D}.Release|x86.Build.0 = Release|Win32
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Debug|x64.ActiveCfg = Debug|x64
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Debug|x64.Build.0 = Debug|x64
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Debug|x86.ActiveCfg = Debug|Win32
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Debug|x86.Build.0 = Debug|Win32
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Release|x64.ActiveCfg = Release|x64
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Release|x64.Build.0 = Release|x64
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Release|x86.ActiveCfg = Release|Win32
+		{78D37357-A4D9-46BC-B96E-3D178E7FB8BD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
