@@ -5,6 +5,7 @@
 
 namespace
 {
+    const size_t OPENSSL_OK = 1;
     int BLOCK_SIZE = 16;
 }
 std::vector<unsigned char> Encrypt(std::vector<unsigned char>& key, std::vector<unsigned char>&iv, std::vector<unsigned char>& data)
@@ -14,24 +15,23 @@ std::vector<unsigned char> Encrypt(std::vector<unsigned char>& key, std::vector<
     ////Initialize symmetric cypher
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
-
-    if(!EVP_CIPHER_CTX_init(ctx))
+    if(OPENSSL_OK != EVP_CIPHER_CTX_init(ctx))
     {
         throw std::exception("error initialize EVP_CIPHER_CTX");
     }
-    if (!EVP_EncryptInit(ctx, EVP_aes_128_cbc(), key.data(), iv.data()))
+    if (OPENSSL_OK != EVP_EncryptInit(ctx, EVP_aes_128_cbc(), key.data(), iv.data()))
     {
         throw std::exception("error initialize cipher");
     }
     std::vector<unsigned char>encrypted(BLOCK_SIZE);
     int encryptSize = static_cast<int>(encrypted.size());
     
-    if(!EVP_EncryptUpdate(ctx, encrypted.data(), &encryptSize, data.data(), data.size()))
+    if(OPENSSL_OK != EVP_EncryptUpdate(ctx, encrypted.data(), &encryptSize, data.data(), data.size()))
     {
         throw std::exception("error update cipher");
     }
 
-    if(!EVP_EncryptFinal(ctx, encrypted.data(), &encryptSize))
+    if(OPENSSL_OK != EVP_EncryptFinal(ctx, encrypted.data(), &encryptSize))
     {
         throw std::exception("error encrypt");
     }
@@ -44,35 +44,33 @@ std::vector<unsigned char>Decrypt(std::vector<unsigned char>& key, std::vector<u
     const EVP_CIPHER *cipher = EVP_aes_256_cbc();
     ////Initialize symmetric cypher
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!EVP_CIPHER_CTX_init(ctx))
+    if (OPENSSL_OK != EVP_CIPHER_CTX_init(ctx))
     {
         throw std::exception("error initialize EVP_CIPHER_CTX");
     }
 
-    if (!EVP_DecryptInit(ctx, EVP_aes_128_cbc(), key.data(), iv.data()))
+    if (OPENSSL_OK != EVP_DecryptInit(ctx, EVP_aes_128_cbc(), key.data(), iv.data()))
     {
         throw std::exception("error initialize cipher");
     }
     std::vector<unsigned char> decrypted(BLOCK_SIZE);
     int decryptSize = static_cast<int>(decrypted.size());
-    if (!EVP_DecryptUpdate(ctx, decrypted.data(), &decryptSize, encryptedData.data(), encryptedData.size()))
+    if (OPENSSL_OK != EVP_DecryptUpdate(ctx, decrypted.data(), &decryptSize, encryptedData.data(), encryptedData.size()))
     {
         const char* err = ERR_error_string(ERR_get_error(), NULL);
         err;
         throw std::exception("error update cipher");
     }
-    //|decrypted.resize(16);
+    //decrypted.resize(16);
     decryptSize = static_cast<int>(decrypted.size());
-    if (!EVP_DecryptFinal(ctx, decrypted.data(), &decryptSize))
+    if (OPENSSL_OK != EVP_DecryptFinal(ctx, decrypted.data(), &decryptSize))
     {
-        int err = ERR_get_error();
-        err;
         throw std::exception("error encrypt");
     }
     return decrypted;
 }
-int main()
 
+int main()
 {   
     std::vector<unsigned char>key{
         0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31,
