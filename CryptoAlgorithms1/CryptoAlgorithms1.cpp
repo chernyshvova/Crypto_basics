@@ -1,99 +1,61 @@
-// CryptoAlgorithms1.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
+#include "AESCBCUtils.h"
 
-namespace
+std::string Base64Encode(const std::vector<uint8_t>& data)
 {
-    const size_t OPENSSL_OK = 1;
-    int BLOCK_SIZE = 16;
+    BIO *b64 = BIO_new(BIO_f_base64());
+    BIO *bmem = BIO_new(BIO_s_mem());
 
-    void HandleErrors(void)
-    {
-        const char* err = ERR_error_string(ERR_get_error(), NULL);
-        err;
-        ERR_print_errors_fp(stderr);
-        abort();
-    }
-}
-std::vector<unsigned char> Encrypt(std::vector<unsigned char>& key, std::vector<unsigned char>&iv, std::vector<unsigned char>& data)
-{
-    const EVP_CIPHER *cipher = EVP_aes_128_cbc();
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    
-    if(OPENSSL_OK != EVP_CIPHER_CTX_init(ctx))
-    {
-        HandleErrors();
-    }
-    if (OPENSSL_OK != EVP_EncryptInit(ctx, EVP_aes_128_cbc(), key.data(), iv.data()))
-    {
-        HandleErrors();
-    }
-    std::vector<unsigned char>encrypted(BLOCK_SIZE);
-    int encryptSize = static_cast<int>(encrypted.size());
-    
-    if(OPENSSL_OK != EVP_EncryptUpdate(ctx, encrypted.data(), &encryptSize, data.data(), data.size()))
-    {
-        HandleErrors();
-    }
+    b64 = BIO_push(b64, bmem);
 
-    if(OPENSSL_OK != EVP_EncryptFinal(ctx, encrypted.data(), &encryptSize))
+    BIO_write(b64, data.data(), static_cast<int>(data.size()));
+    BIO_flush(b64);
+    BUF_MEM *bptr = nullptr;
+    BIO_get_mem_ptr(b64, &bptr);
+    // -1 stands for linebreak symbol added by BIO
+    if (bptr->data != nullptr)
     {
-        HandleErrors();
+        std::string buffer(bptr->data, bptr->data + bptr->length - 1);
+        BIO_free_all(b64);
+        buffer.erase(std::remove(buffer.begin(), buffer.end(), '\n'));
+        buffer[64] = '\0';
+        return buffer;
     }
-    return encrypted;
+    return std::string();
 }
 
-std::vector<unsigned char>Decrypt(std::vector<unsigned char>& key, std::vector<unsigned char>& iv, std::vector<unsigned char>& encryptedData)
+std::vector<unsigned char> GetBytes(const std::string& plain)
 {
-    const EVP_CIPHER *cipher = EVP_aes_128_cbc();
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-
-    if (OPENSSL_OK != EVP_CIPHER_CTX_init(ctx))
-    {
-        HandleErrors();
-    }
-
-    if (OPENSSL_OK != EVP_DecryptInit(ctx, EVP_aes_128_cbc(), key.data(), iv.data()))
-    {
-        HandleErrors();
-    }
-    std::vector<unsigned char> decrypted(BLOCK_SIZE);
-    int decryptSize = static_cast<int>(decrypted.size());
-    if (OPENSSL_OK != EVP_DecryptUpdate(ctx, decrypted.data() , &decryptSize, encryptedData.data(), encryptedData.size()))
-    {
-        
-        HandleErrors();
-    }
-
-    decryptSize = static_cast<int>(decrypted.size());
-    if (OPENSSL_OK != EVP_DecryptFinal_ex(ctx, decrypted.data(), &decryptSize))
-    {
-        HandleErrors();
-    }
-    return decrypted;
+    return std::vector<unsigned char>(plain.cbegin(), plain.cend());
 }
 
-int main()
-{   
-    std::vector<unsigned char>key{
-        0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31, 0x31,
-        0x31, 0x31, 0x31, 0x31, 0x31, 0x31
-    };
+int main(void)
+{
+    const std::vector<unsigned char> key = GetBytes("01234567890123456789012345678901");
 
-    std::vector<unsigned char> iv{
-        0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32, 0x32,
-        0x32, 0x32, 0x32, 0x32, 0x32, 0x32
-    };
-    
-    std::vector<unsigned char>input{
-        0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x63, 0x62, 0x63, 0x20,
-        0x61, 0x6E, 0x64, 0x20, 0x63, 0x62
-    };
+    const std::vector<unsigned char> iv = GetBytes("0123456789012345");
 
-    std::vector<unsigned char> encrypt = Encrypt(key, iv, input);
-    std::vector<unsigned char> decrypted = Decrypt(key, iv, encrypt);
+    const std::vector<unsigned char> plaintext = GetBytes("The quick brown fox jumps over the lazy dog");
+
+    std::vector<unsigned char> ciphertext(128);
+    std::vector<unsigned char> decryptedtext(128);
+    int decryptedtext_len, ciphertext_len;
+
+    ciphertext_len = Encrypt(plaintext, key, iv,
+        ciphertext);
+
+    printf("Ciphertext is:\n");
+    BIO_dump_fp(stdout, (const char*)ciphertext.data(), ciphertext_len);
+   
+    printf("Base64 encoded is:\n%s\n", Base64Encode(ciphertext).data());
+
+    decryptedtext_len = Decrypt(ciphertext, ciphertext_len, key, iv,
+        decryptedtext);
+
+    decryptedtext[decryptedtext_len] = '\0';
+    std::string result(decryptedtext.cbegin(), decryptedtext.cbegin() + decryptedtext_len);
+    printf("Decrypted text is:\n");
+    printf("%s\n", decryptedtext.data());
 
     return 0;
 }
-

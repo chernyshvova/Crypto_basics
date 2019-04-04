@@ -24,6 +24,9 @@
 #include <vector>
 #include <string>
 #include <memory>
-
+#include <openssl/conf.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
+#include <string.h>
 
 // TODO: reference additional headers your program requires here
