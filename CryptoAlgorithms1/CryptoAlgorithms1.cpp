@@ -1,34 +1,6 @@
 #include "stdafx.h"
 #include "AESCBCUtils.h"
 
-std::string Base64Encode(const std::vector<uint8_t>& data)
-{
-    BIO *b64 = BIO_new(BIO_f_base64());
-    BIO *bmem = BIO_new(BIO_s_mem());
-
-    b64 = BIO_push(b64, bmem);
-
-    BIO_write(b64, data.data(), static_cast<int>(data.size()));
-    BIO_flush(b64);
-    BUF_MEM *bptr = nullptr;
-    BIO_get_mem_ptr(b64, &bptr);
-    // -1 stands for linebreak symbol added by BIO
-    if (bptr->data != nullptr)
-    {
-        std::string buffer(bptr->data, bptr->data + bptr->length - 1);
-        BIO_free_all(b64);
-        buffer.erase(std::remove(buffer.begin(), buffer.end(), '\n'));
-        buffer[64] = '\0';
-        return buffer;
-    }
-    return std::string();
-}
-
-std::vector<unsigned char> GetBytes(const std::string& plain)
-{
-    return std::vector<unsigned char>(plain.cbegin(), plain.cend());
-}
-
 int main(void)
 {
     const std::vector<unsigned char> key = GetBytes("01234567890123456789012345678901");
