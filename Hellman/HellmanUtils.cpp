@@ -189,3 +189,24 @@ std::vector<uint8_t> crypt::HKDF(const std::vector<uint8_t> & keyMetrial, const 
 
     return outputBuffer;
 }
+
+std::vector<unsigned char> crypt::utils::HexDecode(const std::string & hexEncodedString)
+{
+    static const size_t s_encodedByteLen = 2;
+    std::vector<unsigned char> decodedBytes;
+    if (!hexEncodedString.empty())
+    {
+        decodedBytes.reserve(hexEncodedString.size() / s_encodedByteLen + 1);
+        for (size_t i = 0; i < hexEncodedString.size(); i += s_encodedByteLen)
+        {
+            const std::string byteString = hexEncodedString.substr(i, s_encodedByteLen);
+            const unsigned char byte = static_cast<unsigned char>(strtol(byteString.c_str(), nullptr, 16));
+            if (byte == 0 && byteString != "00" && byteString != "0")
+            {
+                throw std::exception("Provided input is not valid HexEncoded data!");
+            }
+            decodedBytes.emplace_back(byte);
+        }
+    }
+    return decodedBytes;
+}

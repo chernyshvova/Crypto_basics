@@ -39,4 +39,9 @@ namespace crypt
     std::vector<uint8_t> GenerateSharedKey(const std::vector<uint8_t>& privatKeyBuf, const std::vector<uint8_t>& senderPubKeyBuf);
 
     std::vector<uint8_t> HKDF(const std::vector<uint8_t>& keyMetrial, const std::vector<uint8_t>& info);
+
+    namespace utils
+    {
+        std::vector<unsigned char> HexDecode(const std::string & hexEncodedString);
+    }
 }
