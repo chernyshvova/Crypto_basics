@@ -36,3 +36,4 @@ ipch
 packages
 .cache
 *.enc
+*.t21~
