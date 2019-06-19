@@ -21,5 +21,8 @@
 #include <openssl/hmac.h>
 #include <openssl/kdf.h>
 #include <vector>
-
+#include <sstream>
+#include <iomanip>
+#include <openssl/dh.h>
+#include <openssl/ssl.h>
 // TODO: reference additional headers your program requires here
