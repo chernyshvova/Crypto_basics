@@ -12,7 +12,7 @@ namespace
     const std::string s_privatA = "6e113208f17f79c8616dadc94efed5a9c1963f23b470dd58430523a60cf1d9c37443060044b30512b044c9c258c40679e05b1e628a817fed11ee6dfed929f0498936032d35f6509fc04a28f5927bdeaaec6971da1cf3e834460e0514bc97c6cd99ed88eb0330f0120deb5c650a4d9f871724d64e5832942d56b4be184add6d1eb36c274c6c7cccffce90cf2dd0bc75092d0f05144134d884558d8b5000361c3c4d9e6693a58f44c4f30b2d80102017cf61aad13447c82f865a3e1474f09e8b4ddce10bdfa7f3da6e3355189683409df0b1d934ed1a20d864732315d37b9a43fecc79392ac3e00b11d48df1c9200a0c13853f0aaa3b55dd380bb9486182e3084e";
     const std::string s_publicA = "365b636df90b90ff090c70f2ca09c124869d1a59bd665367861ff962d3021b13106713e37d30ab83249f4ef0fc99e6453a1cea5a64d257cac3327c8d3251859dd0819d6d9d96f15f9073169f7193fd93088e568dbce64cc06cb8e1e1c8288b737a60d4e33cc633a1dd783408067aba313834903a8f304e675427d9908627ec2e15caa394c82e5458fcedd16698697e12229e68d43f8671d620bc964ecc7550d66eb360180bb52ea223b51613f2efef8d7f8baeafa60625859db563724876f665884f069ce41351e5c4b81b126209cc1b2683be2499dd76e30687f90bfd7ca23f318e59bfe5f4c01d943c9ac87190e0849092e852684b4ecee4780d8666e24569";
     const std::string s_publicB = "16dbc03833b1bac692f7bf47d17dda664f792e91031698ae11ce5a1b2c4c19055bffbafc1a5b0ad53484ff31b132ef7e40caef235b3e45ea34e9b7ec2ea456df0605d7b93e4a8c6e4f73df9c1448d0e91676951c114d3799597066ee1898ff02b3715c10e484cad97c58d76f6c127c0b70acc95c8949374341a003434eee353dcc3dc0796294591248f013a7c5ee61b5a8cfd67b321ef298502af334e70820aeea106b2f5750cad3007b285cbc8732fe423c4d01a402c201405c9acf1c9bb090a4c8a414401fe2f23558e7deb2d17d936028a11058e61dce2093eaffb541d74e82b609a52f9b562ffb4cf6412448ff181953ad0ca0a2492b61aca2e0b2e6ea69";
-    const std::string s_endModule = "00a7145548118282480a03eb1881de0cf37f3ffd0c6466c2fa95c9ba1bffa789431d1aec63e9aafd7d5a4254a70f9c8f275900b6df519d1f85f3c0d2c632b1fa40be934071ee7859e1c6e37ff95ddd9a0c89a05ad78b54fcfebf73fdeba7166f60593ac735e63d59b254345f703453ccee04012f68ece2d2bff80379627fe3207ec79264892e108565c44084c1f0748cdab1ebd670f67805ed88c9817f2b5ecd36f5842decf23e88a6718361602c85f1d7dd6bd3506af73010c8359453379146b6ba9e00b4f62d138dcca9173f3927ef5db825cdb1b6452f92fcbf838bdc590c1e3e7d7df76549fdf7ca018b6754f725c197bffa376af3089c376d58c4233320a3";
+    const std::string s_endModule = "a7145548118282480a03eb1881de0cf37f3ffd0c6466c2fa95c9ba1bffa789431d1aec63e9aafd7d5a4254a70f9c8f275900b6df519d1f85f3c0d2c632b1fa40be934071ee7859e1c6e37ff95ddd9a0c89a05ad78b54fcfebf73fdeba7166f60593ac735e63d59b254345f703453ccee04012f68ece2d2bff80379627fe3207ec79264892e108565c44084c1f0748cdab1ebd670f67805ed88c9817f2b5ecd36f5842decf23e88a6718361602c85f1d7dd6bd3506af73010c8359453379146b6ba9e00b4f62d138dcca9173f3927ef5db825cdb1b6452f92fcbf838bdc590c1e3e7d7df76549fdf7ca018b6754f725c197bffa376af3089c376d58c4233320a3";
 
     const std::string s_example_module = "00967e539df836ca13ee2b18fd48eb6e2842d5ffb748848a6757a5154b433f0b02eb4dde936c41ff19d686b5cfc261179c644acde6b7e5403781b71ae1caec820808d56a35dfc79e9ddbe13d3a66518fe4e09a6897843aaae38a8311f6ba830d20b2d9c0fe292c6edd45d17ef5cf15e2b1bc690fdb05a29fcd3e6c70d6ab3c344b";
     const std::string s_example_privatA = "4f1272f99aa887276cccc651d55ff29e51410bb8f0713770c029d8a5da3390a00a983b4d31f97f2f6ecac46bea004970706930e05cd4da4bc7b11f650f6422178af2f49ebe5cd78adf780291bf97f532660ba1415eb55aeb65f0ace3852e980cc69d1aa2f9a02386ad6676b5c6711a1f50c1e0123fd486bd47140b100cdd525f";
@@ -20,75 +20,146 @@ namespace
     const std::string s_example_publicB = "19c4205b7112a66f3b32df9f1baea3b179773c4e947928bbf99de82ccc70eca9b93816b62dc25b1b974cdfc8ddb4b956a9b37489401348876dbe985a587e532e219c675ca83d05d49dfa956784bea34bac18eb0f0863a84e6502346ebcb6d9cfcd8117d1f28545ba87b08e950354c2d348c67801a5d01ab3ca5efbd50cbd29a9";
 }
 
+/* Untitled3 (6/30/2019 3:01:22 PM)
+StartOffset(h): 00000000, EndOffset(h): 000000FF, Length(h): 00000100 */
+
+const std::vector<uint8_t> priv = {
+    0x6E, 0x11, 0x32, 0x08, 0xF1, 0x7F, 0x79, 0xC8, 0x61, 0x6D, 0xAD, 0xC9,
+    0x4E, 0xFE, 0xD5, 0xA9, 0xC1, 0x96, 0x3F, 0x23, 0xB4, 0x70, 0xDD, 0x58,
+    0x43, 0x05, 0x23, 0xA6, 0x0C, 0xF1, 0xD9, 0xC3, 0x74, 0x43, 0x06, 0x00,
+    0x44, 0xB3, 0x05, 0x12, 0xB0, 0x44, 0xC9, 0xC2, 0x58, 0xC4, 0x06, 0x79,
+    0xE0, 0x5B, 0x1E, 0x62, 0x8A, 0x81, 0x7F, 0xED, 0x11, 0xEE, 0x6D, 0xFE,
+    0xD9, 0x29, 0xF0, 0x49, 0x89, 0x36, 0x03, 0x2D, 0x35, 0xF6, 0x50, 0x9F,
+    0xC0, 0x4A, 0x28, 0xF5, 0x92, 0x7B, 0xDE, 0xAA, 0xEC, 0x69, 0x71, 0xDA,
+    0x1C, 0xF3, 0xE8, 0x34, 0x46, 0x0E, 0x05, 0x14, 0xBC, 0x97, 0xC6, 0xCD,
+    0x99, 0xED, 0x88, 0xEB, 0x03, 0x30, 0xF0, 0x12, 0x0D, 0xEB, 0x5C, 0x65,
+    0x0A, 0x4D, 0x9F, 0x87, 0x17, 0x24, 0xD6, 0x4E, 0x58, 0x32, 0x94, 0x2D,
+    0x56, 0xB4, 0xBE, 0x18, 0x4A, 0xDD, 0x6D, 0x1E, 0xB3, 0x6C, 0x27, 0x4C,
+    0x6C, 0x7C, 0xCC, 0xFF, 0xCE, 0x90, 0xCF, 0x2D, 0xD0, 0xBC, 0x75, 0x09,
+    0x2D, 0x0F, 0x05, 0x14, 0x41, 0x34, 0xD8, 0x84, 0x55, 0x8D, 0x8B, 0x50,
+    0x00, 0x36, 0x1C, 0x3C, 0x4D, 0x9E, 0x66, 0x93, 0xA5, 0x8F, 0x44, 0xC4,
+    0xF3, 0x0B, 0x2D, 0x80, 0x10, 0x20, 0x17, 0xCF, 0x61, 0xAA, 0xD1, 0x34,
+    0x47, 0xC8, 0x2F, 0x86, 0x5A, 0x3E, 0x14, 0x74, 0xF0, 0x9E, 0x8B, 0x4D,
+    0xDC, 0xE1, 0x0B, 0xDF, 0xA7, 0xF3, 0xDA, 0x6E, 0x33, 0x55, 0x18, 0x96,
+    0x83, 0x40, 0x9D, 0xF0, 0xB1, 0xD9, 0x34, 0xED, 0x1A, 0x20, 0xD8, 0x64,
+    0x73, 0x23, 0x15, 0xD3, 0x7B, 0x9A, 0x43, 0xFE, 0xCC, 0x79, 0x39, 0x2A,
+    0xC3, 0xE0, 0x0B, 0x11, 0xD4, 0x8D, 0xF1, 0xC9, 0x20, 0x0A, 0x0C, 0x13,
+    0x85, 0x3F, 0x0A, 0xAA, 0x3B, 0x55, 0xDD, 0x38, 0x0B, 0xB9, 0x48, 0x61,
+    0x82, 0xE3, 0x08, 0x4E
+};
+std::vector<unsigned char> s_privateKey{
+    0x30, 0x82, 0x01, 0x3A, 0x02, 0x01, 0x00, 0x02, 0x41, 0x00, 0x8B, 0xCF,
+    0x36, 0x9A, 0xD9, 0x4D, 0xEF, 0x08, 0x70, 0x34, 0x4F, 0x03, 0x30, 0x6E,
+    0x5B, 0x20, 0x20, 0x51, 0x26, 0x26, 0xBE, 0x62, 0xDF, 0xAE, 0xEF, 0x4E,
+    0x39, 0xAC, 0x92, 0x69, 0x51, 0xDD, 0xD7, 0xB6, 0xC2, 0x66, 0x6C, 0x8D,
+    0x50, 0x7F, 0x63, 0x7E, 0x5B, 0x5F, 0x29, 0x9C, 0x4A, 0x76, 0x7B, 0x0D,
+    0xA3, 0xED, 0xE6, 0x4B, 0x16, 0x25, 0xD2, 0x0B, 0x48, 0xEC, 0x0B, 0x53,
+    0xCA, 0xD9, 0x02, 0x03, 0x01, 0x00, 0x01, 0x02, 0x40, 0x24, 0xB1, 0x4D,
+    0x73, 0x76, 0x74, 0xAD, 0xB7, 0x59, 0x3B, 0x61, 0x41, 0x45, 0x04, 0xB1,
+    0x85, 0xCC, 0xF5, 0x7F, 0x3D, 0xCB, 0xD9, 0xC7, 0x3A, 0xF2, 0x33, 0x65,
+    0x8F, 0x95, 0x1D, 0x6F, 0x0E, 0x96, 0xB0, 0xDB, 0x2F, 0x61, 0x25, 0x6A,
+    0xA1, 0x6D, 0x99, 0xC7, 0x29, 0x0F, 0x1C, 0x03, 0x1C, 0xE6, 0xA5, 0x4E,
+    0xE5, 0xBD, 0x18, 0x59, 0x67, 0xB5, 0xDB, 0x77, 0xD7, 0x47, 0xB0, 0xA6,
+    0xC1, 0x02, 0x21, 0x00, 0xBD, 0x5B, 0x0B, 0x6E, 0x34, 0xDD, 0x7A, 0x2F,
+    0xAF, 0x5C, 0x89, 0xC0, 0x2B, 0x1D, 0x0B, 0x5C, 0x0F, 0x4A, 0xE5, 0x40,
+    0x6A, 0x2F, 0xBA, 0x98, 0xBF, 0x39, 0x27, 0x16, 0x11, 0x30, 0x2C, 0xD3,
+    0x02, 0x21, 0x00, 0xBD, 0x04, 0x0D, 0x2C, 0x2F, 0xC1, 0xC2, 0xAE, 0x99,
+    0x4B, 0x2F, 0x2A, 0xED, 0x46, 0x89, 0x45, 0x24, 0x0C, 0x3F, 0x58, 0xC4,
+    0x4A, 0xA6, 0x90, 0x6B, 0x1F, 0x8F, 0xD0, 0xBE, 0xB9, 0x6E, 0x23, 0x02,
+    0x20, 0x1B, 0x1D, 0xB3, 0x98, 0x57, 0x97, 0xB3, 0xCC, 0xAA, 0x57, 0x1D,
+    0x1E, 0xD8, 0xCD, 0xB2, 0xF7, 0xBE, 0xF4, 0xE1, 0xB9, 0x84, 0xBB, 0x4B,
+    0x04, 0x5E, 0xB5, 0xE7, 0x84, 0x00, 0x78, 0x1E, 0xA3, 0x02, 0x21, 0x00,
+    0x81, 0x65, 0x41, 0xA3, 0x4B, 0x3A, 0x49, 0x0D, 0x80, 0x11, 0xD1, 0x43,
+    0x80, 0xD5, 0xF5, 0xE9, 0x28, 0x49, 0x5E, 0x20, 0x65, 0x98, 0x79, 0x38,
+    0x8A, 0xAD, 0x3B, 0xA5, 0xFA, 0xBB, 0x34, 0xA3, 0x02, 0x20, 0x5B, 0xD5,
+    0x89, 0xDF, 0x70, 0xBF, 0x75, 0x83, 0x9D, 0xAA, 0x62, 0x41, 0x9C, 0x15,
+    0x49, 0xB0, 0x19, 0x25, 0x73, 0x62, 0xC9, 0x44, 0xE1, 0x60, 0x00, 0x96,
+    0x0B, 0xB7, 0x89, 0x3B, 0xEE, 0xC2
+};
+
 void handleErrors(void)
 {
     ERR_print_errors_fp(stderr);
 }
 
-DH* GetDH()
+unsigned char *ecdh(size_t *secret_len)
 {
-    static unsigned char dh_g[] = {
-        0x02,
-    };
+    EVP_PKEY_CTX *pctx, *kctx;
+    EVP_PKEY_CTX *ctx;
+    unsigned char *secret;
+    EVP_PKEY *pkey = NULL, *peerkey, *params = NULL;
+    /* NB: assumes pkey, peerkey have been already set up */
 
-    DH *dh = DH_new();
-    
+    /* Create the context for parameter generation */
+    if (NULL == (pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_DH, NULL))) handleErrors();
 
-    if ((dh = DH_new()) == NULL)
-    {
-        handleErrors();
-    }
-    BIGNUM * rett= NULL;
+    /* Initialise the parameter generation */
+    if (1 != EVP_PKEY_paramgen_init(pctx)) handleErrors();
 
-    int ret =  DH_set0_pqg(dh, BN_bin2bn(crypt::utils::HexDecode(s_endModule).data(), s_endModule.size()/2, rett), NULL, BN_bin2bn(dh_g, sizeof(dh_g), NULL));
+    /* We're going to use the ANSI X9.62 Prime 256v1 curve */
+    //if (1 != EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_X9_62_prime256v1)) handleErrors();
+    //EVP_PKEY_CTX_set_data(pctx, crypt::utils::HexDecode(s_endModule).data());
 
-    if (ret == NULL)
-    {
-        handleErrors();
-    }
+    /* Create the parameter object params */
+    //if (!EVP_PKEY_paramgen(pctx, &params)) handleErrors();
+    //params = EVP_PKEY_new();
+    //std::vector<uint8_t> paramsAMaterial = crypt::utils::HexDecode(s_endModule);
+    //const uint8_t* paramsDataPointer = paramsAMaterial.data();
+    //params = d2i_PrivateKey(EVP_PKEY_RSA,&params, &paramsDataPointer, static_cast<int>(paramsAMaterial.size()));
 
-    return dh;
-}
+    /* Create the context for the key generation */
+    //if (NULL == (kctx = EVP_PKEY_CTX_new(params, NULL))) handleErrors();
 
-BIGNUM* ImportKey(std::vector<uint8_t>& key)
-{
-    BIGNUM * res = NULL;
-    if (0 == (BN_dec2bn(&res, (char*)s_publicB.data())))
-    {
-        handleErrors();
-    }
-    return res;
+    /* Generate the key */
+    //if (1 != EVP_PKEY_keygen_init(kctx)) handleErrors();
+    //if (1 != EVP_PKEY_keygen(kctx, &pkey)) handleErrors();
+    pkey = EVP_PKEY_new();
+
+    std::vector<uint8_t> privAMaterial = crypt::utils::HexDecode(s_privatA);
+    const uint8_t* privateDataPointer = s_privateKey.data();
+    pkey = d2i_AutoPrivateKey(&pkey, &privateDataPointer, static_cast<int>(priv.size()));
+    handleErrors();
+    /* Get the peer's public key, and provide the peer with our public key -
+    * how this is done will be specific to your circumstances */
+    peerkey = EVP_PKEY_new();
+    std::vector<uint8_t> pubBMaterial = crypt::utils::HexDecode(s_publicB);
+    const uint8_t* dataPointer = pubBMaterial.data();
+    peerkey = d2i_PrivateKey(EVP_PKEY_RSA, &peerkey, &dataPointer, static_cast<int>(pubBMaterial.size()));
+
+    /* Create the context for the shared secret derivation */
+    if (NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
+
+    /* Initialise */
+    if (1 != EVP_PKEY_derive_init(ctx)) handleErrors();
+
+    /* Provide the peer public key */
+    if (1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
+
+    /* Determine buffer length for shared secret */
+    if (1 != EVP_PKEY_derive(ctx, NULL, secret_len)) handleErrors();
+
+    /* Create the buffer */
+    if (NULL == (secret = (unsigned char*)OPENSSL_malloc(*secret_len))) handleErrors();
+
+    /* Derive the shared secret */
+    if (1 != (EVP_PKEY_derive(ctx, secret, secret_len))) handleErrors();
+
+    EVP_PKEY_CTX_free(ctx);
+    EVP_PKEY_free(peerkey);
+    EVP_PKEY_free(pkey);
+    //EVP_PKEY_CTX_free(kctx);
+    EVP_PKEY_free(params);
+    //EVP_PKEY_CTX_free(pctx);
+
+    /* Never use a derived secret directly. Typically it is passed
+    * through some hash function to produce a key */
+    return secret;
 }
 
 
 int main()
-{   
-    DH *params = GetDH();
-    int codes;
-    int secret_size;
-    BIGNUM *pubkeyA = ImportKey(crypt::utils::HexDecode(s_publicA));
-    BIGNUM *privkeyA = ImportKey(crypt::utils::HexDecode(s_privatA));
-    BIGNUM *pubkeyB = ImportKey(crypt::utils::HexDecode(s_publicB));
-
-    DH_set0_key(params, pubkeyB, privkeyA);
-    
-
-    unsigned char *secret;
-    if (NULL == (secret = (unsigned char*)OPENSSL_malloc(sizeof(unsigned char) * (DH_size(params)))))
-    {
-        handleErrors();
-    }
-
-    if (-1 == (secret_size = DH_compute_key(secret, pubkeyB, params)))
-    {
-        handleErrors();
-    }
-    std::cout << "shared len = " << secret_size << std::endl;
-    printf("The shared secret is:\n");
-    BIO_dump_fp(stdout, (const char*)secret, secret_size);
-
-    OPENSSL_free(secret);
-    BN_free(pubkeyB);
-    DH_free(params);
+{
+    size_t * size = 0;
+    const auto& res = ecdh(size);
     return 0;
 }
