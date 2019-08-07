@@ -3,7 +3,9 @@
 #include "openssl\ec.h"
 #include <openssl/err.h>
 #include "ECParams.h"
-
+#include <openssl/ec.h>
+#include <openssl\rsa.h>
+#include <openssl\evp.h>
 void crypt::handleErrors(void)
 {
 
@@ -85,4 +87,67 @@ EC_GROUP * crypt::create_curve(void)
     BN_CTX_free(ctx);
 
     return curve;
+}
+
+EC_KEY* crypt::GetECKey(EC_GROUP* curve)
+{
+    EC_KEY* key = EC_KEY_new();
+
+    if (NULL == (key = EC_KEY_new_by_curve_name(NID_secp224r1)))
+    {
+        crypt::handleErrors();
+    }
+
+    if (EC_KEY_set_group(key, curve) == NULL)
+    {
+        crypt::handleErrors();
+    }
+
+    if (EC_KEY_generate_key(key) == NULL)
+    {
+        crypt::handleErrors();
+    }
+
+    EC_KEY_get0_private_key(key);
+    return key;
+}
+
+EVP_PKEY* crypt::GetEVPKey()
+{
+    EVP_PKEY_CTX * pctx;
+
+    if (!(pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL)))
+    {
+        crypt::handleErrors();
+    }
+
+    if (!EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_X9_62_prime256v1))
+    {
+        crypt::handleErrors();
+    }
+
+    EVP_PKEY* params = EVP_PKEY_new();
+
+    if (!EVP_PKEY_paramgen(pctx, &params))
+    {
+        crypt::handleErrors();
+    }
+
+    if (!(pctx = EVP_PKEY_CTX_new(params, NULL)))
+    {
+        crypt::handleErrors();
+    }
+
+    if (!EVP_PKEY_keygen_init(pctx))
+    {
+        crypt::handleErrors();
+    }
+
+    EVP_PKEY * evpPkey = EVP_PKEY_new();
+    if (!EVP_PKEY_keygen(pctx, &evpPkey))
+    {
+        crypt::handleErrors();
+    }
+
+    return evpPkey;
 }
