@@ -20,7 +20,7 @@ EC_GROUP * crypt::create_curve(void)
     BIGNUM *a, *b, *p, *order, *x, *y;
     EC_POINT *generator;
 
-    /* Binary data for the curve parameters */
+    /* Binary data from example https://wiki.openssl.org/index.php/Elliptic_Curve_Cryptography*/
     unsigned char a_bin[28] =
     { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
         0xFF,0xFF,0xFF,0xFF,0xFF,0xFE,0xFF,0xFF,0xFF,0xFF,
@@ -46,7 +46,7 @@ EC_GROUP * crypt::create_curve(void)
         0xdf,0xe6,0xcd,0x43,0x75,0xa0,0x5a,0x07,0x47,0x64,
         0x44,0xd5,0x81,0x99,0x85,0x00,0x7e,0x34 };
 
-    /* Binary data for the curve parameters */
+    /* Binary data from task*/
     const auto aBytes = GetA();
     const auto bBytes = GetB();
     const auto primeBytes = GetPrime();
@@ -112,7 +112,7 @@ EC_KEY* crypt::GetECKey(EC_GROUP* curve)
     return key;
 }
 
-EVP_PKEY* crypt::GetEVPKey()
+EVP_PKEY* crypt::GetEVPKey(EC_KEY* ecKey)
 {
     EVP_PKEY_CTX * pctx;
 
@@ -142,12 +142,57 @@ EVP_PKEY* crypt::GetEVPKey()
     {
         crypt::handleErrors();
     }
-
+    
     EVP_PKEY * evpPkey = EVP_PKEY_new();
+    EVP_PKEY_set1_EC_KEY(evpPkey, ecKey);
     if (!EVP_PKEY_keygen(pctx, &evpPkey))
     {
         crypt::handleErrors();
     }
-
+    
     return evpPkey;
+}
+
+std::vector<uint8_t> crypt::Encrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
+{
+    const int padding = 3;
+
+    if (key == NULL)
+    {
+        throw std::exception("invalid key material");
+    }
+
+    std::vector<unsigned char> res(data.size());
+    RSA *rsa = EVP_PKEY_get1_RSA(key);
+
+    int lenth = RSA_private_decrypt(
+        static_cast<int>(data.size()), data.data(), res.data(),
+        rsa, padding);
+
+
+    if (lenth == -1)
+    {
+        throw std::exception("failed to decrypt data");
+    }
+
+    RSA_free(rsa);
+    EVP_PKEY_free(key);
+    return{ res.begin(), res.begin() + lenth };
+}
+
+std::vector<uint8_t> crypt::Decrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
+{
+    const int padding = 3;
+    RSA* rsa = EVP_PKEY_get1_RSA(key);
+
+    std::vector<unsigned char> decryptedData(data.size());
+    int dataLength = RSA_private_decrypt(static_cast<int>(data.size()), data.data(), decryptedData.data(), rsa, padding);
+
+    if (dataLength == -1)
+    {
+        throw std::exception("failed to decrypt data");
+    }
+
+    RSA_free(rsa);
+    return{ decryptedData.begin(), decryptedData.begin() + dataLength };
 }
