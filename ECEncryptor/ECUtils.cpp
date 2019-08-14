@@ -58,12 +58,12 @@ EC_GROUP * crypt::create_curve(void)
     if (NULL == (ctx = BN_CTX_new())) handleErrors();
 
     /* Set the values for the various parameters */
-    if (NULL == (a = BN_bin2bn(aBytes.data(), aBytes.size(), NULL))) handleErrors();
-    if (NULL == (b = BN_bin2bn(bBytes.data(), bBytes.size(), NULL))) handleErrors();
-    if (NULL == (p = BN_bin2bn(primeBytes.data(), primeBytes.size(), NULL))) handleErrors();
-    if (NULL == (order = BN_bin2bn(orderBytes.data(), orderBytes.size(), NULL))) handleErrors();
-    if (NULL == (y = BN_bin2bn(generatorBytes.data(), generatorBytes.size(), NULL))) handleErrors();
-    if (NULL == (x = BN_bin2bn(seedBytes.data(), seedBytes.size(), NULL))) handleErrors();
+    if (NULL == (a = BN_bin2bn(a_bin, 28, NULL))) handleErrors();
+    if (NULL == (b = BN_bin2bn(b_bin, 28, NULL))) handleErrors();
+    if (NULL == (p = BN_bin2bn(p_bin, 28, NULL))) handleErrors();
+    if (NULL == (order = BN_bin2bn(order_bin, 28, NULL))) handleErrors();
+    if (NULL == (y = BN_bin2bn(y_bin, 28, NULL))) handleErrors();
+    if (NULL == (x = BN_bin2bn(x_bin, 28, NULL))) handleErrors();
 
     /* Create the curve */
     if (NULL == (curve = EC_GROUP_new_curve_GFp(p, a, b, ctx))) handleErrors();
@@ -93,7 +93,7 @@ EC_KEY* crypt::GetECKey(EC_GROUP* curve)
 {
     EC_KEY* key = EC_KEY_new();
 
-    if (NULL == (key = EC_KEY_new_by_curve_name(NID_secp224r1)))
+    if (NULL == (key = EC_KEY_new_by_curve_name(NID_secp521r1)))
     {
         crypt::handleErrors();
     }
@@ -107,92 +107,77 @@ EC_KEY* crypt::GetECKey(EC_GROUP* curve)
     {
         crypt::handleErrors();
     }
-
-    EC_KEY_get0_private_key(key);
+    
     return key;
 }
-
-EVP_PKEY* crypt::GetEVPKey(EC_KEY* ecKey)
+RSA * crypt::GetRsaKey(EVP_PKEY * pkey)
 {
-    EVP_PKEY_CTX * pctx;
-
-    if (!(pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL)))
-    {
-        crypt::handleErrors();
-    }
-
-    if (!EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, NID_X9_62_prime256v1))
-    {
-        crypt::handleErrors();
-    }
-
-    EVP_PKEY* params = EVP_PKEY_new();
-
-    if (!EVP_PKEY_paramgen(pctx, &params))
-    {
-        crypt::handleErrors();
-    }
-
-    if (!(pctx = EVP_PKEY_CTX_new(params, NULL)))
-    {
-        crypt::handleErrors();
-    }
-
-    if (!EVP_PKEY_keygen_init(pctx))
-    {
-        crypt::handleErrors();
-    }
-    
-    EVP_PKEY * evpPkey = EVP_PKEY_new();
-    EVP_PKEY_set1_EC_KEY(evpPkey, ecKey);
-    if (!EVP_PKEY_keygen(pctx, &evpPkey))
-    {
-        crypt::handleErrors();
-    }
-    
-    return evpPkey;
-}
-
-std::vector<uint8_t> crypt::Encrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
-{
-    const int padding = 3;
-
-    if (key == NULL)
+    if (pkey == NULL)
     {
         throw std::exception("invalid key material");
     }
 
+    RSA *rsa = EVP_PKEY_get0_RSA(pkey);
+    crypt::handleErrors();
+    if (rsa == NULL)
+    {
+        handleErrors();
+    }
+    return rsa;
+
+}
+std::vector<uint8_t> crypt::Encrypt(const std::vector<uint8_t>& data, RSA * key)
+{    
     std::vector<unsigned char> res(data.size());
-    RSA *rsa = EVP_PKEY_get1_RSA(key);
 
-    int lenth = RSA_private_decrypt(
+    int lenth = RSA_private_encrypt(
         static_cast<int>(data.size()), data.data(), res.data(),
-        rsa, padding);
-
+        key, RSA_NO_PADDING);
 
     if (lenth == -1)
     {
-        throw std::exception("failed to decrypt data");
+        crypt::handleErrors();
+        throw std::exception("failed to encrypt data");
     }
 
-    RSA_free(rsa);
-    EVP_PKEY_free(key);
-    return{ res.begin(), res.begin() + lenth };
+    return res;
 }
 
-std::vector<uint8_t> crypt::Decrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
+std::vector<uint8_t> crypt::Decrypt(const std::vector<uint8_t>& data, RSA * key)
 {
-    const int padding = 3;
-    RSA* rsa = EVP_PKEY_get1_RSA(key);
-
-    std::vector<unsigned char> decryptedData(data.size());
-    int dataLength = RSA_private_decrypt(static_cast<int>(data.size()), data.data(), decryptedData.data(), rsa, padding);
+    std::vector<uint8_t> decryptedData(256);
+    int dataLength = RSA_private_decrypt(static_cast<int>(data.size()), data.data(), decryptedData.data(), key, RSA_NO_PADDING);
 
     if (dataLength == -1)
     {
         throw std::exception("failed to decrypt data");
     }
 
-    RSA_free(rsa);
-    return{ decryptedData.begin(), decryptedData.begin() + dataLength };
+    return decryptedData;
+}
+
+std::vector<uint8_t> crypt::EVPEncrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
+{
+    ENGINE* eng = 0;
+    std::vector<uint8_t>out(3);
+    size_t outlen, inlen;
+    //size_t& len = data.size();
+   // size_t * outLen = static_cast<size_t&>(&len);
+    EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(key, eng);
+    if (!ctx)
+        /* Error occurred */
+        if (EVP_PKEY_encrypt_init(ctx) <= 0)
+            /* Error */
+            if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_NO_PADDING) <= 0)
+                /* Error */
+                /* Determine buffer length */
+                if (EVP_PKEY_encrypt(ctx, NULL, &outlen, data.data(), data.size()) <= 0)
+                    crypt::handleErrors();
+    if (EVP_PKEY_encrypt(ctx, out.data(), &outlen, data.data(), data.size()) <= 0)
+    {
+        crypt::handleErrors();
+    }
+        /* malloc failure */
+
+    return out;
 }
