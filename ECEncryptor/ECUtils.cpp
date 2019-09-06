@@ -159,20 +159,28 @@ std::vector<uint8_t> crypt::Decrypt(const std::vector<uint8_t>& data, RSA * key)
 std::vector<uint8_t> crypt::EVPEncrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
 {
     ENGINE* eng = 0;
-    std::vector<uint8_t>out(3);
-    size_t outlen, inlen;
-    //size_t& len = data.size();
-   // size_t * outLen = static_cast<size_t&>(&len);
+    std::vector<uint8_t>out(data.size());
+    size_t outlen;
+
     EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(key, eng);
     if (!ctx)
-        /* Error occurred */
-        if (EVP_PKEY_encrypt_init(ctx) <= 0)
-            /* Error */
-            if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_NO_PADDING) <= 0)
-                /* Error */
-                /* Determine buffer length */
-                if (EVP_PKEY_encrypt(ctx, NULL, &outlen, data.data(), data.size()) <= 0)
-                    crypt::handleErrors();
+    {
+        crypt::handleErrors();
+    }
+    if (EVP_PKEY_encrypt_init(ctx) <= 0)
+    {
+        crypt::handleErrors();
+    }
+    if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_NO_PADDING) <= 0)
+    {
+        crypt::handleErrors();
+    }
+        /* Determine buffer length */
+    if (EVP_PKEY_encrypt(ctx, NULL, &outlen, data.data(), data.size()) <= 0)
+    {
+        crypt::handleErrors();
+    }
+;
     if (EVP_PKEY_encrypt(ctx, out.data(), &outlen, data.data(), data.size()) <= 0)
     {
         crypt::handleErrors();
