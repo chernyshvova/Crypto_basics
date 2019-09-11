@@ -9,8 +9,8 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include <iostream>
-#include <vector>
 
+#include <vector>
+#include <algorithm>
 
 // TODO: reference additional headers your program requires here
