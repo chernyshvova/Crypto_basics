@@ -16,13 +16,13 @@ const std::string s_msg = "msg";
 int main()
 {
     EC_GROUP* curve = EC_GROUP_new_by_curve_name(NID_secp521r1);
-    EC_KEY* ecKey = crypt::GetECKey(curve);
+    EC_KEY* ecKey = crypt::GetECKey(curve);//EC_KEY_new_by_curve_name(NID_secp521r1);//
     EVP_PKEY* pKey = EVP_PKEY_new();
     EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new(pKey, NULL);
 
     EVP_PKEY_set1_EC_KEY(pKey, ecKey);
     
-    pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+    pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
     if (!pctx)
     {
         crypt::handleErrors();
@@ -56,6 +56,8 @@ int main()
         crypt::handleErrors();
     }
     crypt::handleErrors();
+
+
     /* Generate the key */
     /* RSA keys set the key length during key generation rather than parameter generation! */
     if (!EVP_PKEY_CTX_set_rsa_keygen_bits(pctx, 2048))
@@ -71,13 +73,10 @@ int main()
     ///////////////////////////////////////
     crypt::handleErrors();
 
-    std::vector<uint8_t> res(3);
-    std::vector<uint8_t> in(s_msg.cbegin(), s_msg.cend());
-
     std::vector<uint8_t> data(s_msg.cbegin(), s_msg.cend());
     RSA * rsaKey = crypt::GetRsaKey(pKey);
     
-    const auto& encryptedData = crypt::Encrypt(data, rsaKey);
+    const auto& encryptedData = crypt::EVPEncrypt(data, pKey);
     const auto& decryptedData = crypt::Decrypt(encryptedData, rsaKey);
 
     std::string result(decryptedData.cbegin(), decryptedData.cend());
