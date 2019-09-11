@@ -2,26 +2,9 @@
 
 namespace crypt
 {
-    struct DHPtrDeleter {
-        void operator()(DH* val) {
-            DH_free(val);
-        }
-    };
-
-    struct BIGNUMDeleter {
-        void operator()(BIGNUM* val) {
-            BN_free(val);
-        }
-    };
-
-    using DHPtr = std::unique_ptr<DH, DHPtrDeleter>;
-    using BugNumKey = std::unique_ptr<BIGNUM, BIGNUMDeleter>;
-
     namespace utils
     {
-        DHPtr GetDH(const std::vector<uint8_t>& p, const std::vector<uint8_t>& g);
-        BugNumKey ImportKey(std::vector<char>& key);
-        std::vector<unsigned char> GetSecret();
+		std::vector<unsigned char> GenerateKey(BIGNUM *p, BIGNUM * g, BIGNUM * pubKeyA, BIGNUM * privKeyA, BIGNUM * pubKeyB);
 
         std::vector<unsigned char> HexDecode(const std::string & hexEncodedString);
         
