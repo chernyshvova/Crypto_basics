@@ -6,6 +6,8 @@
 #include <openssl/ec.h>
 #include <openssl\rsa.h>
 #include <openssl\evp.h>
+
+
 void crypt::handleErrors(void)
 {
 
@@ -13,179 +15,148 @@ void crypt::handleErrors(void)
 
 }
 
-EC_GROUP * crypt::create_curve(void)
+crypt::ElCurve::ElCurve()
 {
-    BN_CTX *ctx;
-    EC_GROUP *curve;
-    BIGNUM *a, *b, *p, *order, *x, *y;
-    EC_POINT *generator;
+    p_ = BN_new();
+    a_ = BN_new();
+    b_ = BN_new();
+    n_ = BN_new();
+    h_ = BN_new();
+    ecMet_ = EC_GFp_nist_method();
+    eGr_ = EC_GROUP_new(ecMet_);
+    ctx_ = BN_CTX_new();
 
-    /* Binary data from example https://wiki.openssl.org/index.php/Elliptic_Curve_Cryptography*/
-    unsigned char a_bin[28] =
-    { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-        0xFF,0xFF,0xFF,0xFF,0xFF,0xFE,0xFF,0xFF,0xFF,0xFF,
-        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFE };
-    unsigned char b_bin[28] =
-    { 0xB4,0x05,0x0A,0x85,0x0C,0x04,0xB3,0xAB,0xF5,0x41,
-        0x32,0x56,0x50,0x44,0xB0,0xB7,0xD7,0xBF,0xD8,0xBA,
-        0x27,0x0B,0x39,0x43,0x23,0x55,0xFF,0xB4 };
-    unsigned char p_bin[28] =
-    { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-        0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,
-        0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01 };
-    unsigned char order_bin[28] =
-    { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-        0xFF,0xFF,0xFF,0xFF,0x16,0xA2,0xE0,0xB8,0xF0,0x3E,
-        0x13,0xDD,0x29,0x45,0x5C,0x5C,0x2A,0x3D };
-    unsigned char x_bin[28] =
-    { 0xB7,0x0E,0x0C,0xBD,0x6B,0xB4,0xBF,0x7F,0x32,0x13,
-        0x90,0xB9,0x4A,0x03,0xC1,0xD3,0x56,0xC2,0x11,0x22,
-        0x34,0x32,0x80,0xD6,0x11,0x5C,0x1D,0x21 };
-    unsigned char y_bin[28] =
-    { 0xbd,0x37,0x63,0x88,0xb5,0xf7,0x23,0xfb,0x4c,0x22,
-        0xdf,0xe6,0xcd,0x43,0x75,0xa0,0x5a,0x07,0x47,0x64,
-        0x44,0xd5,0x81,0x99,0x85,0x00,0x7e,0x34 };
-
-    /* Binary data from task*/
-    const auto aBytes = GetA();
-    const auto bBytes = GetB();
-    const auto primeBytes = GetPrime();
-    const auto orderBytes = GetGetOrder();
-    const auto generatorBytes = GetGenerator();
-    const auto seedBytes = GetSeed();
-
-    /* Set up the BN_CTX */
-    if (NULL == (ctx = BN_CTX_new())) handleErrors();
-
-    /* Set the values for the various parameters */
-    if (NULL == (a = BN_bin2bn(a_bin, 28, NULL))) handleErrors();
-    if (NULL == (b = BN_bin2bn(b_bin, 28, NULL))) handleErrors();
-    if (NULL == (p = BN_bin2bn(p_bin, 28, NULL))) handleErrors();
-    if (NULL == (order = BN_bin2bn(order_bin, 28, NULL))) handleErrors();
-    if (NULL == (y = BN_bin2bn(y_bin, 28, NULL))) handleErrors();
-    if (NULL == (x = BN_bin2bn(x_bin, 28, NULL))) handleErrors();
-
-    /* Create the curve */
-    if (NULL == (curve = EC_GROUP_new_curve_GFp(p, a, b, ctx))) handleErrors();
-
-    /* Create the generator */
-    if (NULL == (generator = EC_POINT_new(curve))) handleErrors();
-    if (1 != EC_POINT_set_affine_coordinates_GFp(curve, generator, x, y, ctx))
-        handleErrors();
-
-    /* Set the generator and the order */
-    if (1 != EC_GROUP_set_generator(curve, generator, order, NULL))
-        handleErrors();
-
-    EC_POINT_free(generator);
-    BN_free(y);
-    BN_free(x);
-    BN_free(order);
-    BN_free(p);
-    BN_free(b);
-    BN_free(a);
-    BN_CTX_free(ctx);
-
-    return curve;
 }
 
-EC_KEY* crypt::GetECKey(EC_GROUP* curve)
+unsigned char*  crypt::ElCurve::Decrypt(EncryptMessaage* enMess)
 {
+    EC_POINT *po = EC_POINT_new(eGr_);
+    const EC_POINT*po1[] = { po };
+    BIGNUM* n = BN_new();
+    const	BIGNUM* n1[] = { n };
+
+    EC_POINT* p = EC_POINT_new(eGr_);
+    EC_GROUP_set_generator(eGr_, enMess->p1,
+        o_, cof_);
+    EC_POINTs_mul(eGr_, p, n_,
+        1, po1, n1,
+        ctx_);
+
+    EC_POINT_invert(eGr_, p, ctx_);
+    EC_POINT* r = EC_POINT_new(eGr_);
+    EC_POINT_add(eGr_, r, enMess->p2,
+        p, ctx_);
+    unsigned char* buf = new unsigned char[size_];
+    point_conversion_form_t form = POINT_CONVERSION_COMPRESSED;
+    EC_POINT_point2oct(eGr_, r,
+        form,
+        buf, size_, ctx_);
+
+    return buf;
+}
+void crypt::ElCurve::setSeed(const char* seed)
+{
+    const unsigned char* seedUn = crypt::ConvertconstCharToUnConstChar(seed);
+    EC_GROUP_set_seed(eGr_, seedUn, strlen(seed));
+    BN_hex2bn(&seed_, seed);
+
+}
+crypt::EncryptMessaage* crypt::ElCurve::Encrypt(const char* s)
+
+{
+    size_ = strlen(s);
+    EC_GROUP_set_curve_name(eGr_, 1);
+    EC_GROUP_set_curve_GFp(eGr_, p_, a_,
+        b_, ctx_);
+    setG(
+        "04:00 : c6 : 85 : 8e : 06 : b7 : 04 : 04 : e9 : cd : 9e : 3e : cb : 66 :"
+        "23 : 95 : b4 : 42 : 9c : 64 : 81 : 39 : 05 : 3f : b5 : 21 : f8 : 28 : af :"
+        "60 : 6b : 4d : 3d : ba : a1 : 4b : 5e : 77 : ef : e7 : 59 : 28 : fe : 1d :"
+        "c1 : 27 : a2 : ff : a8 : de : 33 : 48 : b3 : c1 : 85 : 6a : 42 : 9b : f9 :"
+        "7e : 7e : 31 : c2 : e5 : bd : 66 : 01 : 18 : 39 : 29 : 6a : 78 : 9a : 3b :"
+        "c0 : 04 : 5c : 8a : 5f : b4 : 2c : 7d : 1b : d9 : 98 : f5 : 44 : 49 : 57 :"
+        "9b : 44 : 68 : 17 : af : bd : 17 : 27 : 3e : 66 : 2c : 97 : ee : 72 : 99 :"
+        "5e : f4 : 26 : 40 : c5 : 50 : b9 : 01 : 3f : ad : 07 : 61 : 35 : 3c : 70 :"
+        "86 : a2 : 72 : c2 : 40 : 88 : be : 94 : 76 : 9f : d1 : 66 : 50");
+    EC_GROUP_set_generator(eGr_, g_,
+        o_, cof_);
+    setSeed("d0:9e : 88 : 00 : 29 : 1c : b8 : 53 : 96 : cc : 67 : 17 : 39 :"
+        "32 : 84 :"
+        "aa : a0 : da : 64 : ba");
     EC_KEY* key = EC_KEY_new();
 
-    if (NULL == (key = EC_KEY_new_by_curve_name(NID_secp521r1)))
-    {
-        crypt::handleErrors();
-    }
+    EC_KEY_generate_key(key);
+    const EC_KEY* keyC = key;
+    EncryptMessaage* enMess = new EncryptMessaage();
+    enMess->p1 = EC_POINT_new(eGr_);
+    enMess->p2 = EC_POINT_new(eGr_);
+    EC_POINT *p = EC_POINT_new(eGr_);
+    const EC_POINT*p1[] = { p };
+    BIGNUM* n = BN_new();
+    const	BIGNUM* n1[] = { n };
 
-    if (EC_KEY_set_group(key, curve) == NULL)
-    {
-        crypt::handleErrors();
-    }
 
-    if (EC_KEY_generate_key(key) == NULL)
-    {
-        crypt::handleErrors();
-    }
+    EC_POINTs_mul(eGr_, enMess->p1, seed_,
+        1, p1, n1,
+        ctx_);
+
+    BIGNUM* prKey = BN_new(); BN_hex2bn(&prKey, "3");	
+    n_ = prKey;
+    EC_POINT* pubKey = EC_POINT_new(eGr_);
+    EC_POINTs_mul(eGr_, pubKey, prKey,
+        1, p1, n1,
+        ctx_);
+    pubKey_ = pubKey;
+    EC_POINT* secOP = EC_POINT_new(eGr_);
+    BIGNUM* r = BN_new();
+    BN_mod_mul(r, prKey, seed_, p_,
+        ctx_);
+    EC_POINT *p22 = EC_POINT_new(eGr_);
+    EC_POINTs_mul(eGr_, p22, r,
+        1, p1, n1,
+        ctx_);
+    EC_POINT *p21 = EC_POINT_new(eGr_);
+    EC_POINT_hex2point(eGr_, s,
+        p21, ctx_);
+    EC_POINT_add(eGr_, enMess->p2, p21,
+        p22, ctx_);
     
-    return key;
+    std::cout << "ok Encrypt" << std::endl;
+    return enMess;
 }
-RSA * crypt::GetRsaKey(EVP_PKEY * pkey)
+
+crypt::ElCurve::~ElCurve()
 {
-    if (pkey == NULL)
-    {
-        throw std::exception("invalid key material");
-    }
-
-    RSA *rsa = EVP_PKEY_get0_RSA(pkey);
-    crypt::handleErrors();
-    if (rsa == NULL)
-    {
-        handleErrors();
-    }
-    return rsa;
+    BN_clear_free(a_);
+    BN_clear_free(b_);
+    BN_clear_free(h_);
+    BN_clear_free(p_);
+    EC_GROUP_clear_free(eGr_);
 
 }
-std::vector<uint8_t> crypt::Encrypt(const std::vector<uint8_t>& data, RSA * key)
-{    
-    std::vector<unsigned char> res(data.size());
-
-    int lenth = RSA_private_encrypt(
-        static_cast<int>(data.size()), data.data(), res.data(),
-        key, RSA_NO_PADDING);
-
-    if (lenth == -1)
-    {
-        crypt::handleErrors();
-        throw std::exception("failed to encrypt data");
-    }
-
-    return res;
-}
-
-std::vector<uint8_t> crypt::Decrypt(const std::vector<uint8_t>& data, RSA * key)
+void crypt::ElCurve::setCof(const char* s)
 {
-    std::vector<uint8_t> decryptedData(256);
-    int dataLength = RSA_private_decrypt(static_cast<int>(data.size()), data.data(), decryptedData.data(), key, RSA_NO_PADDING);
-
-    if (dataLength == -1)
-    {
-        throw std::exception("failed to decrypt data");
-    }
-
-    return decryptedData;
+    BN_hex2bn(&cof_, s);
+}
+void crypt::ElCurve::setA(const char* s)
+{
+    BN_hex2bn(&a_, s);
 }
 
-std::vector<uint8_t> crypt::EVPEncrypt(const std::vector<uint8_t>& data, EVP_PKEY * key)
+void crypt::ElCurve::setB(const char* s)
 {
-    ENGINE* eng = 0;
-    std::vector<uint8_t>out(data.size());
-    size_t outlen;
-
-    EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(key, eng);
-    if (!ctx)
-    {
-        crypt::handleErrors();
-    }
-    if (EVP_PKEY_encrypt_init(ctx) <= 0)
-    {
-        crypt::handleErrors();
-    }
-    if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_NO_PADDING) <= 0)
-    {
-        crypt::handleErrors();
-    }
-        /* Determine buffer length */
-    if (EVP_PKEY_encrypt(ctx, NULL, &outlen, data.data(), data.size()) <= 0)
-    {
-        crypt::handleErrors();
-    }
-;
-    if (EVP_PKEY_encrypt(ctx, out.data(), &outlen, data.data(), data.size()) <= 0)
-    {
-        crypt::handleErrors();
-    }
-        /* malloc failure */
-
-    return out;
+    BN_hex2bn(&b_, s);
+}
+void crypt::ElCurve::setP(const char* s)
+{
+    BN_hex2bn(&p_, s);
+}
+void crypt::ElCurve::setG(const char* s)
+{
+    EC_POINT_hex2point(eGr_, s,
+        g_, ctx_);
+}
+void crypt::ElCurve::setH(const char* s)
+{
+    BN_hex2bn(&h_, s);
 }

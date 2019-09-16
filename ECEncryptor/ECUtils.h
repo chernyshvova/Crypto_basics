@@ -4,12 +4,42 @@
 namespace crypt
 {
     void handleErrors(void);
-    EC_GROUP *create_curve(void);
-    EC_KEY* GetECKey(EC_GROUP* curve);
-    RSA* GetRsaKey(EVP_PKEY * pkey);
-    //EVP_PKEY* GetEVPKey(EC_KEY* ecKey);
-    std::vector<uint8_t> Encrypt(const std::vector<uint8_t>& data, RSA* key);
-    std::vector<uint8_t> Decrypt(const std::vector<uint8_t>& data, RSA* key);
-    std::vector<uint8_t> EVPEncrypt(const std::vector<uint8_t>& data, EVP_PKEY* key);
+
+    class EncryptMessaage
+    {
+    public:
+        EC_POINT* p1;
+        EC_POINT* p2;
+    };
+
+    class ElCurve
+    {
+        BIGNUM* a_;
+        BIGNUM* b_;
+        BIGNUM* p_;
+        const BIGNUM* n_;
+        EC_POINT *g_;
+        BIGNUM* h_;
+        BIGNUM* cof_;
+        BIGNUM* o_;
+        const EC_METHOD *ecMet_;
+        BN_CTX *ctx_;
+        EC_POINT* pubKey_;
+        int size_;
+        EC_GROUP *eGr_;
+        BIGNUM* seed_;
+    public:
+        ElCurve();
+        ~ElCurve();
+        void setCof(const char* s);
+        void setA(const char* s);
+        void setB(const char* s);
+        void setP(const char* s);
+        void setG(const char* s);
+        void setH(const char* s);
+        EncryptMessaage* Encrypt(const char* s);
+        void setSeed(const char* seed);
+        unsigned char* Decrypt(EncryptMessaage* enMess);
+    };
 }
 
