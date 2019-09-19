@@ -24,7 +24,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CryptoUtils.h">
+    <ClInclude Include="AnalystUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RSAKeygen.cpp">
+    <ClCompile Include="ECBAnalyst.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CryptoUtils.cpp">
+    <ClCompile Include="AnalystUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

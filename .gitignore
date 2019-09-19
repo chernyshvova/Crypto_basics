@@ -26,6 +26,8 @@
 *.obj
 *.idb
 *.pch
+*ipdb
+*.iobj
 
 bin
 lib
@@ -33,3 +35,5 @@ obj
 ipch
 packages
 .cache
+*.enc
+*.t21~
